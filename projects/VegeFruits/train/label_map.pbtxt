@@ -1,0 +1,72 @@
+item {
+  display_name:  'apple'
+  id:  1
+  name:  'apple'
+}
+
+item {
+  display_name:  'banana'
+  id:  2
+  name:  'banana'
+}
+
+item {
+  display_name:  'bell_pepper'
+  id:  3
+  name:  'bell_pepper'
+}
+
+item {
+  display_name:  'bitter_gourd'
+  id:  4
+  name:  'bitter_gourd'
+}
+
+item {
+  display_name:  'carrot'
+  id:  5
+  name:  'carrot'
+}
+
+item {
+  display_name:  'cucumber'
+  id:  6
+  name:  'cucumber'
+}
+
+item {
+  display_name:  'grape'
+  id:  7
+  name:  'grape'
+}
+
+item {
+  display_name:  'kiwi'
+  id:  8
+  name:  'kiwi'
+}
+
+item {
+  display_name:  'lemon'
+  id:  9
+  name:  'lemon'
+}
+
+item {
+  display_name:  'orange'
+  id:  10
+  name:  'orange'
+}
+
+item {
+  display_name:  'strawberry'
+  id:  11
+  name:  'strawberry'
+}
+
+item {
+  display_name:  'zucchini'
+  id:  12
+  name:  'zucchini'
+}
+
