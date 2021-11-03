@@ -11,7 +11,7 @@ __pycache__/
 build/
 projects/VegeFruits/models/
 efficientdet-d0/
-
+cocoapi/
 develop-eggs/
 dist/
 downloads/
