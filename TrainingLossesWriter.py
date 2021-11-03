@@ -22,9 +22,7 @@ class TrainingLossesWriter:
 
   def __init__(self, training_losses_file):
     self.training_losses_file = training_losses_file
-    #if os.path.exists(self.training_losses_file):
-    #  os.remove(self.training_losses_file)
-      
+
     if not os.path.exists(self.training_losses_file):
       with open(self.training_losses_file, "w") as f:
         header = "epoch, box_loss, cls_loss, loss\n"

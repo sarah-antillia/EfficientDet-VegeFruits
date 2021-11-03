@@ -22,36 +22,25 @@ import traceback
 
 class EvaluationResultsWriter:
 
-  def __init__(self, evaluation_results_file, debug=False):
+  def __init__(self, evaluation_results_file):
     self.evaluation_results_file = evaluation_results_file
-    self.debug = debug
     self.header = "epoch, f, mAP, mAP@50IoU, mAP@75IoU, mAP_smallm, AP_medium, mAP_large,"
     self.header = self.header + " AR@1, AR@10, AR@100, AR@100small, AR@100medium, AR@100large\n"
 
-    if os.path.exists(self.evaluation_results_file):
-      os.remove(self.evaluation_results_file)
- 
-    if self.debug == True: 
-      try:
-        if not os.path.exists(self.evaluation_results_file):
-          with open(self.evaluation_results_file, "w") as f:
-            f.write(self.header)
-      except Exception as ex:
-        traceback.print_exc()
+    try:
+      if not os.path.exists(self.evaluation_results_file):
+        with open(self.evaluation_results_file, "w") as f:
+          f.write(self.header)
+    except Exception as ex:
+      traceback.print_exc()
 
+    
   def write(self, e, results):
     SEP = ","
     NL  = "\n"
-    if self.debug == True:
-      file_open_mode = "a"
-    else:
-      file_open_mode = "w"
-
     
     try:
-        with open(self.evaluation_results_file, file_open_mode) as f:
-          if self.debug == False:
-            f.write(self.header)
+        with open(self.evaluation_results_file, "a") as f:
 
           ap     = str( results['AP']  )
           ap_50  = str( results['AP50'])
