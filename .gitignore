@@ -10,6 +10,7 @@ __pycache__/
 .Python
 build/
 projects/VegeFruits/models/
+efficientdet-d0/
 
 develop-eggs/
 dist/
