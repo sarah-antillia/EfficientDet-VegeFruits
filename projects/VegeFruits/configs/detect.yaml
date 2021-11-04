@@ -4,7 +4,7 @@ label_map: {
   3: 'bell_pepper', 
   4: 'bitter_gourd', 
   5: 'carrot', 
-  6; 'cucumber',
+  6: 'cucumber',
   7: 'grape', 
   8: 'kiwi', 
   9: 'lemon', 
