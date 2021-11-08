@@ -49,6 +49,7 @@ from mAPEarlyStopping        import mAPEarlyStopping
 from FvalueEarlyStopping     import FvalueEarlyStopping
 
 from EvaluationResultsWriter import EvaluationResultsWriter
+from CategorizedAPWriter     import CategorizedAPWriter
 from EpochChangeNotifier     import EpochChangeNotifier
 from TrainingLossesWriter    import TrainingLossesWriter
 
@@ -69,18 +70,24 @@ class EfficientDetFinetuningModel(object):
     self.training_losses_writer    = TrainingLossesWriter(training_losses_file)
 
     evaluation_results_file        = self.parser.evaluation_results_file()
-   
+    self.label_map_pbtxt           = self.parser.label_map_pbtxt()
+    
     self.evaluation_results_writer = EvaluationResultsWriter(evaluation_results_file)
+    self.categorized_ap_file       = self.parser.categorized_ap_file()
+    
+    self.categorized_ap_writer     = CategorizedAPWriter(self.label_map_pbtxt, self.categorized_ap_file)
+    
     self.early_stopping_metric     = self.parser.early_stopping_metric()
     patience            = self.parser.early_stopping_patience()
     self.early_stopping = None
-    
-    if patience > 0:
-      # 2021/10/13
-      if self.early_stopping_metric == "map":
-        self.early_stopping = mAPEarlyStopping(patience=patience, verbose=1) 
-      elif self.early_stopping_metric == "fvalue":
-        self.early_stopping = FvalueEarlyStopping(patience=patience, verbose=1)
+    if self.early_stopping_metric != None and patience != None:
+
+      if patience > 0:
+        # 2021/10/13
+        if self.early_stopping_metric == "map":
+          self.early_stopping = mAPEarlyStopping(patience=patience, verbose=1) 
+        elif self.early_stopping_metric == "fvalue":
+          self.early_stopping = FvalueEarlyStopping(patience=patience, verbose=1)
 
  
 
@@ -108,9 +115,13 @@ class EfficientDetFinetuningModel(object):
 
     # Parse and override hparams
     config = hparams_config.get_detection_config(self.parser.model_name())
-    #hparams="image_size=416x416"
-    config.override(self.parser.hparams())
-    #config.override(hparams)
+    #hparams = 'label_map="./projects/VegeFruits/configs/default.yaml"'
+    hparams = self.parser.hparams()
+    print("--- hparams {}".format(hparams))
+    #2021/11/06: Checking hparams.
+    if hparams:
+      config.override(hparams)
+
     if self.parser.num_epochs():  # NOTE: remove this flag after updating all docs.
       config.num_epochs = self.parser.num_epochs()
 
@@ -334,8 +345,7 @@ class EfficientDetFinetuningModel(object):
           breaking_loop = self.run_train_and_eval(e)
           if breaking_loop == True:
             print("=== Breaking the train_and_eval loop by mAPEarlyStopping epoch={}".format(e) )
-            #break
-            system.exit(0)
+            sys.exit(0)
 
     else:
       logging.info('Invalid mode: %s', self.parser.mode())
@@ -372,6 +382,9 @@ class EfficientDetFinetuningModel(object):
     self.epoch_change_notifier.epoch_end(e, loss, map)
     
     self.evaluation_results_writer.write(e, eval_results)
+    # 2021/11/07 Added the following line.
+    self.categorized_ap_writer.write(e, eval_results)
+
     self.training_losses_writer.write(e, eval_results)
 
     ckpt = tf.train.latest_checkpoint(self.parser.model_dir() )

@@ -273,6 +273,8 @@ class EvaluationMetric():
         if self.label_map:
           # process per-class AP.
           label_map = label_util.get_label_map(self.label_map)
+          print("-------- label_map {}".format(label_map))
+          
           for i, cid in enumerate(sorted(label_map.keys())):
             name = 'AP_/%s' % label_map[cid]
             metrics_dict[name] = (metrics[i + len(self.metric_names)],

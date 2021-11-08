@@ -57,7 +57,7 @@ class EvaluationResultsWriter:
           f_v    = str( 2.0 * (float(ap)* float(ar_1))/(float(ap) + float(ar_1)) )
           line = str(e) + SEP + f_v  + SEP + ap   + SEP + ap_50 + SEP + ap_75  + SEP + ap_s + SEP + ap_m + SEP + ap_l 
           line = line   + SEP + ar_1 + SEP + ar_10 + SEP + ar_100 + SEP + ar_s + SEP + ar_m + SEP + ar_l + NL 
-          print("=== AP & AR {}".format(line))
+          print("=== Evaluation results(AP & AR) {}".format(line))
           f.write(line)
     except Exception as ex:
         traceback.print_exc()

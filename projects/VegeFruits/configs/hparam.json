@@ -1,0 +1,15 @@
+label_map :{
+  1: 'apple'
+  2: 'banana'
+  3: 'bell_pepper' 
+  4: 'bitter_gourd' 
+  5: 'carrot' 
+  6: 'cucumber'
+  7: 'grape' 
+  8: 'kiwi' 
+  9: 'lemon' 
+ 10: 'orange' 
+ 11: 'strawberry' 
+ 12: 'zucchini' 
+}
+

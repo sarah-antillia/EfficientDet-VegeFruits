@@ -57,6 +57,7 @@ class TrainConfig:
   RUN_EPOCH_IN_CHILD_PROCESS = "run_epoch_in_child_process"
   FILE_PATTERN        = "file_pattern"
   EXAMPLES_PER_EPOCH  = "examples_per_epoch"
+  LABEL_MAP_PBTXT     = "label_map_pbtxt"
   
   HPARAMS             = "hparams"
   CORES               = "cores"
@@ -66,7 +67,7 @@ class TrainConfig:
   TF_RANDOM_SEED      = "tf_random_seed"
   USE_FAKE_DATA       = "use_fake_data"
   TRAINING_LOSSES_FILE = "training_losses_file"
-
+ 
 
   VALIDATION          = "validation"
   #FILE_PATTERN       = "file_pattern"
@@ -80,6 +81,8 @@ class TrainConfig:
   MIN_EVAL_INTERVAL   = "min_eval_interalval"
   EVAL_TIMEOUT        = "eval_timeout"
   EVALUATION_RESULTS_FILE   = "evaluation_results_file"
+  # 2021/11/07 Added the followin line.
+  CATEGORIZED_AP_FILE   = "categorized_ap_file"
   
   EPOCH_CHANGE_NOTIFIER = "epoch_change_notifier"
   

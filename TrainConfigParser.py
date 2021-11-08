@@ -231,15 +231,30 @@ class TrainConfigParser(TrainConfig):
       return self.config[self.TRAINING][self.FILE_PATTERN]
     except:
       return None
+
+  # 2021/11/08
   
-  # Comma separated k=v pairs of hyperparameters or a module
-  # containing attributes to use as hyperparameters.
+  def label_map_pbtxt(self):
+    try:
+      return self.config[self.TRAINING][self.LABEL_MAP_PBTXT]
+    except:
+      return None
+
+  def categorized_ap_file(self):
+    try:
+      return self.config[self.TRAINING][self.CATEGORIZED_AP_FILE]
+    except:
+      return None
+
+  # 2021/11/08
+  # val is fool.yaml or comma separated k=v pairs of hyperparameters 
   def hparams(self):
+    import yaml
     try:
       val = self.config[self.TRAINING][self.HPARAMS]
-      return self.parse_if_possible(val)
+      return val
     except:
-      pass
+      traceback.print_exc()
     return None
 
   # 'Number of examples in one epoch'
@@ -412,7 +427,13 @@ class TrainConfigParser(TrainConfig):
       return self.config[self.VALIDATION][self.EVALUATION_RESULTS_FILE]
     except:
       return None
-      
+
+  # 2021/11/07 Added the following method.
+  def categorized_ap_file(self):
+    try:
+      return self.config[self.VALIDATION][self.CATEGORIZED_AP_FILE]
+    except:
+      return None
 
   def early_stopping_patience(self):
     MAX_PATIENCE = 50
@@ -422,14 +443,14 @@ class TrainConfigParser(TrainConfig):
         val = self.INVALID
       return val
     except:
-      return self.INVALID
+      return None  #self.INVALID
 
   def early_stopping_metric(self):
     metric = "map"
     try:   
       return self.config[self.EARLY_STOPPING][self.METRIC]
     except:
-      return metric
+      return None  # metric
 
   def epoch_change_notifier_enabled(self):
     try:
@@ -519,7 +540,7 @@ class TrainConfigParser(TrainConfig):
 
     print("evaluation_results_file {}".format(self.evaluation_results_file() ))
 
-    print("early_stopping_mode     {}".format(self.early_stopping_mode() ))
+    print("early_stopping_metric   {}".format(self.early_stopping_metric() ))
 
     print("early_stopping_patience {}".format(self.early_stopping_patience() ))
 
