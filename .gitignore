@@ -11,7 +11,7 @@ __pycache__/
 build/
 projects/VegeFruits/models/
 projects/VegeFruits/models_*/
-projects/VegeFruits/*.csv
+
 efficientdet-d0/
 cocoapi/
 develop-eggs/
