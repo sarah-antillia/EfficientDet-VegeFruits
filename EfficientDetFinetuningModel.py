@@ -37,7 +37,10 @@ import numpy as np
 import tensorflow.compat.v1 as tf
 
 import dataloader
-import det_model_fn
+#import det_model_fn
+#2021/11/17
+import det_model_fn2 as det_model_fn
+
 import hparams_config
 import utils
 import pprint
