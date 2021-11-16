@@ -1,4 +1,4 @@
-# 
+#  Copyright (c) 2020-2021 Antillia.com TOSHIYUKI ARAI. ALL RIGHTS RESERVED.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,9 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
+
 # CategorizedAPWriter.py
-#
+# atlan-antillia
 # 2021/11/08 Write AP's for all categories to a result.csv file.
 
 import os
@@ -55,6 +55,7 @@ class CategorizedAPWriter:
           for category in self.categories:            
             key  = "AP_/" + category
             ap   = float(results[key])
+            ap   = round(ap, 5)
             line = line +  str(ap) + SEP
              
           print("=== Categorized_AP {}".format(line))

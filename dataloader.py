@@ -339,7 +339,6 @@ class InputReader:
 
       source_id = tf.where(
           tf.equal(source_id, tf.constant('')), '-1', source_id)
-      #2021/11/03
       source_id = tf.strings.to_number(source_id)
 
       # Pad groundtruth data for evaluation.

@@ -17,6 +17,12 @@
 Implements the interface of COCO API and metric_fn in tf.TPUEstimator.
 COCO API: github.com/cocodataset/cocoapi/
 """
+
+# coco_metric2.py
+# atlan-antillia
+
+# 2021/11/15 Modified evaluate method in EvaluationMetric class 
+
 import json
 import os
 import sys
@@ -25,6 +31,8 @@ import numpy as np
 import tensorflow as tf
 
 from tf2 import label_util
+
+from CategorizedCOCOeval import CategorizedCOCOeval
 
 try:
 # pylint: disable=g-import-not-at-top
@@ -53,7 +61,9 @@ class EvaluationMetric():
   This class cannot inherit from tf.keras.metrics.Metric due to numpy.
   """
 
-  def __init__(self, filename=None, testdev_dir=None, label_map=None):
+  def __init__(self, filename=None, testdev_dir=None, label_map=None, 
+             eval_dir=None,               #2021/11/14 Added this line.
+             disable_per_class_ap=False): #2021/11/15 Added this line.
     """Constructs COCO evaluation class.
 
     The class provides the interface to metrics_fn in TPUEstimator. The
@@ -69,8 +79,16 @@ class EvaluationMetric():
         groundtruth, and filename will be ignored.
       label_map: a dict from id to class name. Used for per-class AP.
     """
+    print("=== EvaluationMetric ")
+    print("=== eval_dir             {}".format(eval_dir))
+    print("=== label_map            {}".format(label_map))
+    print("=== disable_per_class_ap {}".format(disable_per_class_ap))
+
+    self.eval_dir  = eval_dir
     self.label_map = label_map
-    self.filename = filename
+    self.disable_per_class_ap = disable_per_class_ap
+
+    self.filename  = filename
     self.testdev_dir = testdev_dir
     self.metric_names = ['AP', 'AP50', 'AP75', 'APs', 'APm', 'APl', 'ARmax1',
                          'ARmax10', 'ARmax100', 'ARs', 'ARm', 'ARl']
@@ -141,7 +159,12 @@ class EvaluationMetric():
       detections = np.array(self.detections)
       image_ids = list(set(detections[:, 0]))
       coco_dt = coco_gt.loadRes(detections)
-      coco_eval = COCOeval(coco_gt, coco_dt, iouType='bbox')
+      #coco_eval = COCOeval(coco_gt, coco_dt, iouType='bbox')
+      #2021/11/14 
+      coco_eval = CategorizedCOCOeval(coco_gt, coco_dt, iouType='bbox',
+                            eval_dir=self.eval_dir, 
+                            label_map=self.label_map)
+      
       coco_eval.params.imgIds = image_ids
       coco_eval.evaluate()
       coco_eval.accumulate()
@@ -149,7 +172,10 @@ class EvaluationMetric():
       enable_print(original_stdout)
       coco_metrics = coco_eval.stats
 
-      if self.label_map:
+      # 2021/11/15
+      #if self.label_map:
+      print("--- EvaluationMetric self.disable_per_class_ap {} ".format(self.disable_per_class_ap))
+      if self.label_map and self.disable_per_class_ap == False:
         # Get per_class AP, see pycocotools/cocoeval.py:334
         # TxRxKxAxM: iouThrs x recThrs x catIds x areaRng x maxDets
         # Use areaRng_id=0 ('all') and maxDets_id=-1 (200) in default
@@ -270,7 +296,10 @@ class EvaluationMetric():
         for i, name in enumerate(self.metric_names):
           metrics_dict[name] = (metrics[i], update_op)
 
-        if self.label_map:
+        #if self.label_map
+        # 2021/11/14
+        if self.label_map and self.disable_per_class_ap==False:
+
           # process per-class AP.
           label_map = label_util.get_label_map(self.label_map)
           for i, cid in enumerate(sorted(label_map.keys())):

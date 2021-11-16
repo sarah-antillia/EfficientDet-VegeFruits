@@ -44,14 +44,17 @@ import pprint
 
 from io import StringIO 
 
+from LabelMapReader          import LabelMapReader
+
 from TrainConfigParser       import TrainConfigParser
 from mAPEarlyStopping        import mAPEarlyStopping
 from FvalueEarlyStopping     import FvalueEarlyStopping
 
 from EvaluationResultsWriter import EvaluationResultsWriter
-from CategorizedAPWriter     import CategorizedAPWriter
 from EpochChangeNotifier     import EpochChangeNotifier
 from TrainingLossesWriter    import TrainingLossesWriter
+from CategorizedAPWriter     import CategorizedAPWriter
+
 
 class EfficientDetFinetuningModel(object):
 
@@ -66,28 +69,39 @@ class EfficientDetFinetuningModel(object):
       os.makedirs(self.model_dir)
    
     training_losses_file           = self.parser.training_losses_file()
-
+    print("=== training_losses_file{}".format(training_losses_file))
+    self.label_map_pbtxt           = self.parser.label_map_pbtxt()
+    labelMapReader                 = LabelMapReader()
+    self.label_map, classes        = labelMapReader.read( self.label_map_pbtxt)
+    print("=== label_map {}".format(self.label_map))
     self.training_losses_writer    = TrainingLossesWriter(training_losses_file)
 
+    eval_dir                    = self.parser.eval_dir()
+    print("=== eval_dir {}",format(eval_dir))
+    if os.path.exists(eval_dir) == False:
+      os.makedirs(eval_dir)
+          
+    categorized_ap_file       = self.parser.categorized_ap_file()    
+    print("=== categorized_ap_file  {}".format(categorized_ap_file ))
+    self.disable_per_class_ap = self.parser.disable_per_class_ap()
+    self.categorized_ap_writer   = None
+    if self.disable_per_class_ap == False:
+      self.categorized_ap_writer     = CategorizedAPWriter(self.label_map_pbtxt, categorized_ap_file)
+    
     evaluation_results_file        = self.parser.evaluation_results_file()
-    self.label_map_pbtxt           = self.parser.label_map_pbtxt()
+    print("=== evaluation_results_file {}".format(evaluation_results_file))
     
     self.evaluation_results_writer = EvaluationResultsWriter(evaluation_results_file)
-    self.categorized_ap_file       = self.parser.categorized_ap_file()
-    
-    self.categorized_ap_writer     = CategorizedAPWriter(self.label_map_pbtxt, self.categorized_ap_file)
-    
     self.early_stopping_metric     = self.parser.early_stopping_metric()
     patience            = self.parser.early_stopping_patience()
     self.early_stopping = None
-    if self.early_stopping_metric != None and patience != None:
-
-      if patience > 0:
-        # 2021/10/13
-        if self.early_stopping_metric == "map":
-          self.early_stopping = mAPEarlyStopping(patience=patience, verbose=1) 
-        elif self.early_stopping_metric == "fvalue":
-          self.early_stopping = FvalueEarlyStopping(patience=patience, verbose=1)
+    
+    if patience != None or patience > 0:
+      # 2021/10/13
+      if self.early_stopping_metric == "map":
+        self.early_stopping = mAPEarlyStopping(patience=patience, verbose=1) 
+      elif self.early_stopping_metric == "fvalue":
+        self.early_stopping = FvalueEarlyStopping(patience=patience, verbose=1)
 
  
 
@@ -115,13 +129,11 @@ class EfficientDetFinetuningModel(object):
 
     # Parse and override hparams
     config = hparams_config.get_detection_config(self.parser.model_name())
-    #hparams = 'label_map="./projects/VegeFruits/configs/default.yaml"'
+    #hparams="image_size=416x416"
     hparams = self.parser.hparams()
-    print("--- hparams {}".format(hparams))
-    #2021/11/06: Checking hparams.
+    #2021/11/10 Checking hparams
     if hparams:
-      config.override(hparams)
-
+      config.override(self.parser.hparams())
     if self.parser.num_epochs():  # NOTE: remove this flag after updating all docs.
       config.num_epochs = self.parser.num_epochs()
 
@@ -272,6 +284,11 @@ class EfficientDetFinetuningModel(object):
       def get_estimator(global_batch_size):
         params['num_shards'] = getattr(strategy, 'num_replicas_in_sync', 1)
         params['batch_size'] = global_batch_size // params['num_shards']
+        params['eval_dir']   = self.parser.eval_dir()  #2021/11/14
+        params['label_map']  = self.label_map          #2021/11/14
+        params['disable_per_class_ap'] = self.parser.disable_per_class_ap() #2021/11/15
+        print("------------------------disable_per_class_ap {}".format(params['disable_per_class_ap']))
+        
         return tf.estimator.Estimator(
             model_fn=model_fn_instance, config=run_config, params=params)
 
@@ -345,7 +362,8 @@ class EfficientDetFinetuningModel(object):
           breaking_loop = self.run_train_and_eval(e)
           if breaking_loop == True:
             print("=== Breaking the train_and_eval loop by mAPEarlyStopping epoch={}".format(e) )
-            sys.exit(0)
+            #break
+            system.exit(0)
 
     else:
       logging.info('Invalid mode: %s', self.parser.mode())
@@ -363,7 +381,9 @@ class EfficientDetFinetuningModel(object):
     print("=== train_batch_size       {}".format(self.parser.train_batch_size()))
     print("=== num_examples_per_epoch {}".format(self.parser.num_examples_per_epoch()))
     print("=== max_steps              {}".format(max_steps))
-    
+    # 2021/11/15 
+    os.environ['epoch'] = str(e)
+    print("=== environ[['epoch']={}".format(os.environ['epoch']))
     self.train_est.train(
         input_fn  = self.train_input_fn,
         max_steps = max_steps)
@@ -382,8 +402,9 @@ class EfficientDetFinetuningModel(object):
     self.epoch_change_notifier.epoch_end(e, loss, map)
     
     self.evaluation_results_writer.write(e, eval_results)
-    # 2021/11/07 Added the following line.
-    self.categorized_ap_writer.write(e, eval_results)
+    # 2021/11/15
+    if self.categorized_ap_writer:
+      self.categorized_ap_writer.write(e, eval_results)
 
     self.training_losses_writer.write(e, eval_results)
 

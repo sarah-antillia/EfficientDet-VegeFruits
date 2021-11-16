@@ -73,7 +73,8 @@ class TrainConfig:
   #FILE_PATTERN       = "file_pattern"
   #BATCH_SIZE         = "batch_size"
   EVAL_SAMPLES        = "eval_samples"
-
+  #2021/11/14
+  EVAL_DIR            = "eval_dir"
   ITERATIONS_PER_LOOP = "iterations_per_loop"
   VAL_JSON_FILE       = "val_json_file"
   EVAL_AFTER_TRAIN    = "eval_after_train"
@@ -83,6 +84,9 @@ class TrainConfig:
   EVALUATION_RESULTS_FILE   = "evaluation_results_file"
   # 2021/11/07 Added the followin line.
   CATEGORIZED_AP_FILE   = "categorized_ap_file"
+
+  # 2021/11/15 Disable evaluation of per_class_ap in coco_metric.py
+  DISABLE_PER_CLASS_AP  = "disable_per_class_ap"
   
   EPOCH_CHANGE_NOTIFIER = "epoch_change_notifier"
   

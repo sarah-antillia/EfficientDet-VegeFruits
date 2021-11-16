@@ -233,7 +233,6 @@ class TrainConfigParser(TrainConfig):
       return None
 
   # 2021/11/08
-  
   def label_map_pbtxt(self):
     try:
       return self.config[self.TRAINING][self.LABEL_MAP_PBTXT]
@@ -335,7 +334,13 @@ class TrainConfigParser(TrainConfig):
       return self.config[self.VALIDATION][self.FILE_PATTERN]
     except:
       return None
-    
+
+  def eval_dir(self):
+    try:
+      return self.config[self.VALIDATION][self.EVAL_DIR]
+    except:
+      return "./"  
+
   """
   'global evaluation batch size'
   """
@@ -433,7 +438,13 @@ class TrainConfigParser(TrainConfig):
     try:
       return self.config[self.VALIDATION][self.CATEGORIZED_AP_FILE]
     except:
-      return None
+      return "./"
+
+  def disable_per_class_ap(self):
+    try:
+      return eval(self.config[self.VALIDATION][self.DISABLE_PER_CLASS_AP])
+    except:
+      return False
 
   def early_stopping_patience(self):
     MAX_PATIENCE = 50
