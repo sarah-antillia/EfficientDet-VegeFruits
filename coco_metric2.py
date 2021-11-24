@@ -32,7 +32,8 @@ import tensorflow as tf
 
 from tf2 import label_util
 
-from CategorizedCOCOeval import CategorizedCOCOeval
+#2021/11/21
+from CategorizedCOCOEvaluator import CategorizedCOCOEvaluator
 
 try:
 # pylint: disable=g-import-not-at-top
@@ -160,8 +161,8 @@ class EvaluationMetric():
       image_ids = list(set(detections[:, 0]))
       coco_dt = coco_gt.loadRes(detections)
       #coco_eval = COCOeval(coco_gt, coco_dt, iouType='bbox')
-      #2021/11/14 
-      coco_eval = CategorizedCOCOeval(coco_gt, coco_dt, iouType='bbox',
+      #2021/11/14 11/21 
+      coco_eval = CategorizedCOCOEvaluator(coco_gt, coco_dt, iouType='bbox',
                             eval_dir=self.eval_dir, 
                             label_map=self.label_map)
       

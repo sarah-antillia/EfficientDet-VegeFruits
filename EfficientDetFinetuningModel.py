@@ -53,7 +53,7 @@ from TrainConfigParser       import TrainConfigParser
 from mAPEarlyStopping        import mAPEarlyStopping
 from FvalueEarlyStopping     import FvalueEarlyStopping
 
-from EvaluationResultsWriter import EvaluationResultsWriter
+from COCOMetricsWriter       import COCOMetricsWriter
 from EpochChangeNotifier     import EpochChangeNotifier
 from TrainingLossesWriter    import TrainingLossesWriter
 from CategorizedAPWriter     import CategorizedAPWriter
@@ -84,22 +84,23 @@ class EfficientDetFinetuningModel(object):
     if os.path.exists(eval_dir) == False:
       os.makedirs(eval_dir)
           
-    categorized_ap_file       = self.parser.categorized_ap_file()    
-    print("=== categorized_ap_file  {}".format(categorized_ap_file ))
+    coco_ap_per_class_file       = self.parser.coco_ap_per_class_file()    
+    print("=== coco_ap_per_class_file  {}".format(coco_ap_per_class_file ))
     self.disable_per_class_ap = self.parser.disable_per_class_ap()
     self.categorized_ap_writer   = None
     if self.disable_per_class_ap == False:
-      self.categorized_ap_writer     = CategorizedAPWriter(self.label_map_pbtxt, categorized_ap_file)
+      self.categorized_ap_writer  = CategorizedAPWriter(self.label_map_pbtxt, coco_ap_per_class_file)
     
-    evaluation_results_file        = self.parser.evaluation_results_file()
-    print("=== evaluation_results_file {}".format(evaluation_results_file))
+    coco_metrics_file     = self.parser.coco_metrics_file()
+    print("=== evaluation_results_file {}".format(coco_metrics_file))
     
-    self.evaluation_results_writer = EvaluationResultsWriter(evaluation_results_file)
-    self.early_stopping_metric     = self.parser.early_stopping_metric()
-    patience            = self.parser.early_stopping_patience()
+    self.coco_metrics_writer    = COCOMetricsWriter(coco_metrics_file)
+    self.early_stopping_metric  = self.parser.early_stopping_metric()
+    patience    = self.parser.early_stopping_patience()
+
     self.early_stopping = None
     
-    if patience != None or patience > 0:
+    if patience > 0:
       # 2021/10/13
       if self.early_stopping_metric == "map":
         self.early_stopping = mAPEarlyStopping(patience=patience, verbose=1) 
@@ -107,7 +108,6 @@ class EfficientDetFinetuningModel(object):
         self.early_stopping = FvalueEarlyStopping(patience=patience, verbose=1)
 
  
-
   def train(self):
     ipaddress = self.parser.epoch_change_notifier_ipaddress()
     port      = self.parser.epoch_change_notifier_port()
@@ -365,9 +365,8 @@ class EfficientDetFinetuningModel(object):
           breaking_loop = self.run_train_and_eval(e)
           if breaking_loop == True:
             print("=== Breaking the train_and_eval loop by mAPEarlyStopping epoch={}".format(e) )
-            #break
-            system.exit(0)
-
+            break
+  
     else:
       logging.info('Invalid mode: %s', self.parser.mode())
 
@@ -404,7 +403,7 @@ class EfficientDetFinetuningModel(object):
 
     self.epoch_change_notifier.epoch_end(e, loss, map)
     
-    self.evaluation_results_writer.write(e, eval_results)
+    self.coco_metrics_writer.write(e, eval_results)
     # 2021/11/15
     if self.categorized_ap_writer:
       self.categorized_ap_writer.write(e, eval_results)
@@ -416,10 +415,9 @@ class EfficientDetFinetuningModel(object):
 
     breaking_loop_by_earlystopping = False
     if self.early_stopping != None:
-      ap           = eval_results['AP']
-      ar_1         = eval_results['ARmax1']
-      
-      breaking_loop_by_earlystopping = self.early_stopping.validate(e, ap, ar_1)
+      ap   = eval_results['AP']
+      ar   = eval_results['ARmax1']
+      breaking_loop_by_earlystopping = self.early_stopping.validate(e, ap, ar)
       
     return breaking_loop_by_earlystopping
 
@@ -430,7 +428,7 @@ class EfficientDetFinetuningModel(object):
 
 def main(_):
   train_config = ""
-  if len(sys.argv)==2:
+  if len(sys.argv) == 2:
     train_config = sys.argv[1]
   else:
     raise Exception("Usage: python EfficientDetFinetuningModel.py train_config")
@@ -441,7 +439,6 @@ def main(_):
   model = EfficientDetFinetuningModel(train_config)
   model.train()
        
-
 if __name__ == '__main__':
   logging.set_verbosity(logging.INFO)
   tf.enable_v2_tensorshape()

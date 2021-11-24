@@ -19,7 +19,7 @@ from absl import logging
 import numpy as np
 import tensorflow.compat.v1 as tf
 #2021/11/15
-import coco_metric2
+import coco_metric2 as coco_metric
 
 import efficientdet_arch
 import hparams_config
@@ -470,13 +470,13 @@ def _model_fn(features, labels, mode, params, model, variable_filter_fn=None):
 
       if params.get('testdev_dir', None):
         logging.info('Eval testdev_dir %s', params['testdev_dir'])
-        eval_metric = coco_metric2.EvaluationMetric(
+        eval_metric = coco_metric.EvaluationMetric(
             testdev_dir=params['testdev_dir'])
         coco_metrics = eval_metric.estimator_metric_fn(detections_bs,
                                                        tf.zeros([1]))
       else:
         logging.info('Eval val with groudtruths %s.', params['val_json_file'])
-        eval_metric = coco_metric2.EvaluationMetric(
+        eval_metric = coco_metric.EvaluationMetric(
             filename  = params['val_json_file'], 
             label_map = params['label_map'],
             eval_dir  = params['eval_dir'],                         #2021/11/14 

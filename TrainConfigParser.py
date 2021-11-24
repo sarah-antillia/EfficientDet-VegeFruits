@@ -239,9 +239,9 @@ class TrainConfigParser(TrainConfig):
     except:
       return None
 
-  def categorized_ap_file(self):
+  def coco_ap_per_class_file(self):
     try:
-      return self.config[self.TRAINING][self.CATEGORIZED_AP_FILE]
+      return self.config[self.TRAINING][self.COCO_AP_PER_CLASS_FILE]
     except:
       return None
 
@@ -361,13 +361,15 @@ class TrainConfigParser(TrainConfig):
     except:
       return 100
 
-  def eval_batch_size(self):
-    return 1
 
   def num_examples_per_epoch(self):
-    return 100
-
-          
+    try:
+      rc = int(self.config[self.TRAINING][self.NUM_EXAMPLES_PER_EPOCH])
+      print("--- num_examples_per_epoch{}".format(rc))
+      return rc
+    except:
+      pass
+    return self.INVALID          
   """
   'Number of iterations per TPU training loop'
   """
@@ -427,22 +429,24 @@ class TrainConfigParser(TrainConfig):
       return None
 
 
-  def evaluation_results_file(self):
+  def coco_metrics_file(self):
     try:
-      return self.config[self.VALIDATION][self.EVALUATION_RESULTS_FILE]
+      return self.config[self.VALIDATION][self.COCO_METRICS_FILE]
     except:
       return None
 
-  # 2021/11/07 Added the following method.
-  def categorized_ap_file(self):
+  # 2021/11/22 Added the following method.
+  def coco_ap_per_class_file(self):
     try:
-      return self.config[self.VALIDATION][self.CATEGORIZED_AP_FILE]
+      return self.config[self.VALIDATION][self.COCO_AP_PER_CLASS_FILE]
     except:
       return "./"
 
   def disable_per_class_ap(self):
     try:
-      return eval(self.config[self.VALIDATION][self.DISABLE_PER_CLASS_AP])
+      rc = eval(self.config[self.VALIDATION][self.DISABLE_PER_CLASS_AP])
+      print("==== disable_per_class_ap {}".format(rc))
+      return rc
     except:
       return False
 
@@ -454,7 +458,7 @@ class TrainConfigParser(TrainConfig):
         val = self.INVALID
       return val
     except:
-      return None  #self.INVALID
+      return self.INVALID
 
   def early_stopping_metric(self):
     metric = "map"
@@ -549,7 +553,7 @@ class TrainConfigParser(TrainConfig):
 
     print("eval_timeout           {}".format(self.eval_timeout() ))
 
-    print("evaluation_results_file {}".format(self.evaluation_results_file() ))
+    print("coco_ap_per_class_file {}".format(self.coco_ap_per_class_file() ))
 
     print("early_stopping_metric   {}".format(self.early_stopping_metric() ))
 

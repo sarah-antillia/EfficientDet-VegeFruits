@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# 2021/11/14 atlan-antillia
-# CategorizedCOCOeval.py
+# 2021/11/20 atlan-antillia
+# CategorizedCOCOEvaluator.py
 
 #  See also: https://github.com/kimyoon-young/centerNet-deep-sort/blob/master/tools/cocoeval.py
 
@@ -27,10 +27,11 @@ from collections import defaultdict
 import pycocotools.mask as maskUtils
 
 import copy
+from copy import deepcopy
 
 from pycocotools.cocoeval import COCOeval
 
-class CategorizedCOCOeval(COCOeval):
+class CategorizedCOCOEvaluator(COCOeval):
 
     def __init__(self, 
                    cocoGt=None, 
@@ -39,10 +40,27 @@ class CategorizedCOCOeval(COCOeval):
                    label_map=None, 
                    eval_dir=None):
                    
-        print("=== CategorizedCOCOeval")
+        print("=== CategorizedCOCOEvaluator")
         super().__init__(cocoGt, cocoDt, iouType)
-        self.label_map  = label_map
+        self.label_map = label_map
         self.eval_dir  = eval_dir
+        num_classes    = len(self.label_map)
+
+        head = "epoch,"
+        for i in range(num_classes):
+            head = head + self.label_map[i+1] + ","
+
+        metrics = ["ap", "ar", "f"]
+        self.files   = []
+        for m in metrics:
+            file = os.path.join(self.eval_dir, "categorized_" + m + ".csv")
+            self.files.append(file)
+
+        for file in self.files:
+            if os.path.exists(file) == False:
+                with open(file, "w") as f:
+                    f.write(head + "\n")
+
         
 
     # Override summarize method.
@@ -52,7 +70,7 @@ class CategorizedCOCOeval(COCOeval):
         Note this functin can *only* be applied on the default parameter setting
         '''
         def _summarize( ap=1, iouThr=None, areaRng='all', maxDets=100 ):
-            #print('==== _summerize ... {}'.format(iouThr))
+            # See : https://github.com/kimyoon-young/centerNet-deep-sort/blob/master/tools/cocoeval.py
 
             p = self.params
             iStr = ' {:<18} {} @[ IoU={:<9} | area={:>6s} | maxDets={:>3d} ] = {:0.3f}'
@@ -92,65 +110,61 @@ class CategorizedCOCOeval(COCOeval):
 
         def _write_categorized_ap_ar_f(ap, ar):
             # Write ap_ar for each category to a csv file.
-            #
-            # See also: https://github.com/kimyoon-young/centerNet-deep-sort/blob/master/tools/cocoeval.py
             p = self.params
-            num_classes = len(p.catIds)
+            # p.catId does not necessarily contain all ids of the categories
+            num_ids     = len(p.catIds)
+            num_classes = len(self.label_map)
+            print("=== CategorizedCOCOEvaluator.write_categorized_ap_ar_f  num_ids:{} num_classes:{} label_map:{}:  ".format(num_ids,
+                num_classes, self.label_map))
+            SEP = ","
+            NL  = "\n"
+            epoch = 1
+            try: 
+                epoch = os.environ['epoch']
+            except:
+                pass
 
-            #print("=== num_classes:{} label_map:{}".format(num_classes, self.label_map))
             try:
-                SEP = ","
-                NL  = "\n"
-                epoch = 1
-                try: 
-                  epoch = os.environ['epoch']
-                except:
-                  pass
-
-                head = "epoch,"
-                for i in range(len(self.label_map)):
-                  head = head + self.label_map[i+1] + SEP
-
-                #print("=== head {}".format(head))
-                metrics = ["ap", "ar", "f"]
-                files   = []
-                for m in metrics:
-                  file = os.path.join(self.eval_dir, "categorized_" + m + ".csv")
-                  files.append(file)
-
-                for file in files:
-                  if os.path.exists(file) == False:
-                    with open(file, "w") as f:
-                        f.write(head + NL)
-
-  
                 ap_line = str(epoch) + SEP
                 ar_line = str(epoch) + SEP
                 f_line  = str(epoch) + SEP
 
+                # Enumerate all classes.
+                #2021/11/23 Modified
                 for i in range(0, num_classes):
-                    map = np.mean(ap[:,:,i,:])
-                    mar = np.mean(ar[:,i,:])
+                    map = 0.0
+                    mar = 0.0
                     f   = 0.0
-                    if (map + mar) != 0:
-                        f   = 2.0 * (map * mar)/(map + mar)
-                    map = round(map, 5)
-                    mar = round(mar, 5)
-                    f   = round(f,   5)
+                    # p.catIds doesn't necessarily contain all classes.
+                    if (i+1) in p.catIds:
+                        try:
+                            #print("=== {} found in p.catIds".format(i))
+                            map = np.mean(ap[:,:,i,:])
+                            mar = np.mean(ar[:,i,:])
+                            f   = 0.0
+                            if (map + mar) != 0:
+                                f   = 2.0 * (map * mar)/(map + mar)
+                                map = round(map, 5)
+                                mar = round(mar, 5)
+                                f   = round(f,   5)
+                        except Exception as ex:
+                            print(ex)
+                            pass
                     ap_line = ap_line + str(map) + SEP
                     ar_line = ar_line + str(mar) + SEP
                     f_line  = f_line  + str(f)   + SEP
 
                 lines = [ap_line, ar_line, f_line]
+
                 i = 0
-                for file in files:
+                for file in self.files:
                     with open(file, "a") as f:
                         f.write(lines[i] + NL)
                         print("----file {} line {}".format(file, lines[i]))
                     i += 1
 
             except Exception as ex:
-                  traceback.print_exc()
+                traceback.print_exc()
 
 
         def _summarizeDets():

@@ -1,34 +1,43 @@
 #******************************************************************************
 #
-#  Copyright (c) 2020-2021 Antillia.com TOSHIYUKI ARAI. ALL RIGHTS RESERVED.
+#  Copyright (c) 2021 Antillia.com TOSHIYUKI ARAI. ALL RIGHTS RESERVED.
 #
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
+#     http://www.apache.org/licenses/LICENSE-2.0
 #
-#    You should have received a copy of the GNU General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 #
 #******************************************************************************
-# 
+
+
+# LabelMapReader.py
+# 2021/11/05
 
 #2021/11/12 toshiyuki.arai
 
 """
-  Modified the following line in read metho.
-            # The following line will cause an error if line contained the line 'name: "Maximum_Width_in_Meters",', 
-            # because "id" in "Width".
-            #if "id" in line:
-            if line.startswith("id:"):
+Modified the following line in read method.
+  # The following line will cause an error if line contained 'name: "Maximum_Width_in_Meters",', 
+  # because "id" in "Width".
+  #if "id" in line:
+  if "id:" in line:
             
 
+
 """
+# 2021/11/19 Modified read method to parse input line
+# if line.startswith("id:"):
+#
+# elif line.startswith("name:"):
+#
+     
 import os
 import sys
 import traceback
@@ -38,49 +47,50 @@ class LabelMapReader:
   def __init__(self):
     pass
 
-    
   def read(self, label_map_file):
     id    = None
     name  = None
     items = {}
-    classes = []    
+    classes = []
     with open(label_map_file, "r") as f:
         for line in f:
-          try:
             line.replace(" ", "")
-            # The following line will cause an error if line contained the line 'name: "Maximum_Width_in_Meters",', 
-            # because "id" in "Width".
-            #if "id" in line:
-            if "id:" in line:
+            line = line.strip()
+            if line.startswith("id:"):
                 id = int(line.split(":")[1].replace(",", "").strip() )
-                
-            #elif "name" in line:  
-            elif "name:" in line:
+            elif line.startswith("name:"):
                 name = line.split(":")[1].replace(",", "").strip()
                 name = name.replace("'", "").replace("\"", "")
-                
             if id is not None and name is not None:
                 classes.append(name)
-                #items[name] = id 2021/09/20
-                items[id] = name
-
-                id = None
+                items[id]    = name                
+                id   = None
                 name = None
-          except:
-            traceback.print_exc()
-            
+
     return items, classes
 
 
 
 if __name__ == "__main__":
-  label_map = "./projects/BloodCells/train/label_map.pbtxt"
+  label_map = "./label_map.pbtxt"
 
   try:
      reader = LabelMapReader()
      items, classes = reader.read(label_map)
-     print(items)
-     print(classes)
+     print("--- items   {}".format(items))
+     print("--- classes {}".format(classes))
+
+
+     for i in items:
+       print("i {} name  {}".format(i, items[i]) )
+
+     for i in range(len(classes)):
+       try:
+         class_name = classes[i]
+         print("index {}  class {}".format(i, class_name))
+       except:
+         traceback.print_exc()
+
 
   except Exception as ex:
     traceback.print_exc()

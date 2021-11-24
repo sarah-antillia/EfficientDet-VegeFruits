@@ -1,0 +1,358 @@
+item { 
+  id: 1, 
+  name: "Bicycles_Only",
+}
+    
+item { 
+  id: 2, 
+  name: "Bumpy_Road",
+}
+
+item { 
+  id: 3, 
+  name: "Buses_Priority",
+}
+    
+item {
+  id: 4, 
+  name: "Centre_Line", 
+}
+    
+item {
+  id: 5,
+  name: "Closed_To_Pedestrians",
+}
+    
+item {
+  id: 6,
+  name: "Crossroads",
+}
+
+item {
+  id: 7,
+  name: "Dangerous_Wind _Gusts",
+}
+
+item {
+  id: 8,
+  name: "Directions_Indicator"
+}
+
+item {
+  id: 9,
+  name: "Falling_Rocks"
+}
+    
+item {
+  id:10, 
+  name: "Keep_Left",
+}
+    
+item {
+  id: 11,
+  name: "Keep_Right"
+}
+    
+item {
+  id: 12,
+  name: "Left_Lane_Ends",
+}
+    
+item {
+  id: 13, 
+  name: "Maximum_Height_in_Meters",
+}
+    
+item { 
+  id: 14, 
+  name: "Maximum_Weight_in_Tons",
+}
+
+item { 
+  id: 15, 
+  name: "Maximum_Width_in_Meters",
+}
+
+item {
+  id: 16, 
+  name: "Minimum_Speed_Limit_50km",
+}
+    
+item {
+  id: 17, 
+  name: "Motor_Vehicles_Only",
+}
+    
+item {
+  id: 18, 
+  name: "No_Bicycles",
+}
+    
+item { 
+  id: 19, 
+  name: "No_Buses",
+}
+    
+item {
+  id: 20, 
+  name: "No_Entry",
+}
+    
+item { 
+  id: 21, 
+  name: "No_Motorcycles_Or_Mopeds",
+}
+    
+item {
+   id: 22, 
+   name: "No_Motor_Vehicles",
+}
+    
+item { 
+  id: 23, 
+  name: "No_Motor_Vehicles_Except_Motorcycles_And_Mopeds",
+}
+    
+item { 
+  id: 24, 
+  name: "No_Nonmotorized_Vehicle",
+}
+    
+item { 
+  id: 25, 
+  name: "No_Overtaking",
+}
+    
+item { 
+  id: 26, 
+  name: "No_Parking",
+}
+    
+item { 
+  id: 27, 
+  name: "No_Pedestrian_Crossing",
+}
+    
+item { 
+  id: 28, 
+  name: "No_Right_Turn_Crossing",
+}
+    
+item { 
+  id: 29, 
+  name: "No_Stopping"
+}
+
+item { 
+  id: 30, 
+  name: "No_Trucks",
+}
+
+item { 
+  id: 31, 
+  name: "No_Turns",
+}
+
+item { 
+  id: 32, 
+  name: "No_TwoPerson_Motorcycles",
+}
+
+item { 
+  id: 33, 
+  name: "No_TwoStage_Right_Turn_For_Mopeds",
+}
+
+item { 
+  id: 34, 
+  name: "No_UTurn",
+}
+
+item { 
+  id: 35, 
+  name: "No_Vehicles_Carrying_Dangerous_Goods",
+}
+
+item { 
+  id: 36, 
+  name: "OneWay",
+}
+
+item { 
+  id: 37, 
+  name: "OneWay_To_The_Left",
+}
+
+item { 
+  id: 38, 
+  name: "OneWay_To_The_Right",
+}
+
+item { 
+  id: 39, 
+  name: "Other_Dangers",
+}
+
+item { 
+  id: 40, 
+  name: "Pedestrians_Only",
+}
+
+item { 
+  id: 41, 
+  name: "Pedestrian_Crossing",
+}
+
+item { 
+  id: 42, 
+  name: "RailroadCrossing",
+}
+    
+item { 
+  id: 43, 
+  name: "Roadworks",
+}
+
+item { 
+  id: 44, 
+  name: "Road_Closed_To_Pedestrian",
+}
+
+item { 
+  id: 45, 
+  name: "Road_Closed_To_Vehicles",
+}
+    
+item { 
+  id: 46, 
+  name: "Road_Narrows",
+}
+    
+item { 
+  id: 47, 
+  name: "Rotary",
+}
+
+item { 
+  id: 48,
+  name: "Roundabout",
+}
+
+item { 
+  id: 49, 
+  name: "Safety_Zone",
+}
+
+item { 
+  id: 50, 
+  name: "School_Crossing",
+}
+
+item { 
+  id: 51, 
+  name: "School_Zone",
+}
+
+item { 
+  id: 52, 
+  name: "Slippery_Surface",
+}
+
+item { 
+  id: 53, 
+  name: "Slow_Down",
+}
+
+item { 
+  id: 54, 
+  name: "Sound_Horn",
+}
+
+item { 
+  id: 55, 
+  name: "Speed_Limit_90km",
+}
+
+item { 
+  id: 56, 
+  name: "Steep_Ascent_10%",
+}
+
+item { 
+  id: 57, 
+  name: "Steep_Descent_10%",
+}
+
+item { 
+  id:  58,
+   name: "Stop",
+}
+
+item { 
+  id: 59, 
+  name: "Stop_Line",
+}
+
+item { 
+  id: 60, 
+  name: "Straight_Ahead_Or_Left_Turn",
+}
+
+item { 
+  id: 61,
+   name: "Straight_Ahead_Or_Right_Turn",
+}
+
+item { 
+  id: 62, 
+  name: "Succession_Of_More_Than_Two_Curves_To_The_Right",
+}
+
+item { 
+  id: 63,
+  name: "Traffic_Lights_Ahead",
+}
+
+item { 
+  id: 64, 
+  name: "Traffic_Merges_From_Left",
+}
+
+item { 
+  id: 65, 
+  name: "Turn_Left",
+}
+
+item { 
+  id: 66, 
+  name: "Turn_Left_Or_Right",
+}
+
+item { 
+  id: 67, 
+  name: "Turn_Right"
+}
+
+item { 
+  id: 68, 
+  name: "TwoStage_Right_Turn_For_Mopeds",
+}
+
+item { 
+  id: 69, 
+  name: "TwoWay_Traffic_Ahead",
+}
+
+item { 
+  id: 70, 
+  name: "Wild_Animals_Crossing",
+}
+
+item { 
+  id: 71, 
+  name: "Traffic_Circle",
+}
+
+
+ 
+

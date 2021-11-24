@@ -20,10 +20,10 @@ import os
 import sys
 import traceback
 
-class EvaluationResultsWriter:
+class COCOMetricsWriter:
 
   def __init__(self, evaluation_results_file):
-    print("=== EvaluationResultsWriter __init__")
+    print("=== COCOMetricWriter __init__")
 
     self.evaluation_results_file = evaluation_results_file
     self.header = "epoch, f, mAP, mAP@50IoU, mAP@75IoU, mAP_smallm, AP_medium, mAP_large,"
