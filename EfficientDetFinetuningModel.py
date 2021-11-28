@@ -70,7 +70,12 @@ class EfficientDetFinetuningModel(object):
     self.model_dir      = self.parser.model_dir()
     if not os.path.exists(self.model_dir):
       os.makedirs(self.model_dir)
-   
+
+    eval_dir                    = self.parser.eval_dir()
+    print("=== eval_dir {}",format(eval_dir))
+    if os.path.exists(eval_dir) == False:
+      os.makedirs(eval_dir)
+
     training_losses_file           = self.parser.training_losses_file()
     print("=== training_losses_file{}".format(training_losses_file))
     self.label_map_pbtxt           = self.parser.label_map_pbtxt()
@@ -78,11 +83,6 @@ class EfficientDetFinetuningModel(object):
     self.label_map, classes        = labelMapReader.read( self.label_map_pbtxt)
     print("=== label_map {}".format(self.label_map))
     self.training_losses_writer    = TrainingLossesWriter(training_losses_file)
-
-    eval_dir                    = self.parser.eval_dir()
-    print("=== eval_dir {}",format(eval_dir))
-    if os.path.exists(eval_dir) == False:
-      os.makedirs(eval_dir)
           
     coco_ap_per_class_file       = self.parser.coco_ap_per_class_file()    
     print("=== coco_ap_per_class_file  {}".format(coco_ap_per_class_file ))

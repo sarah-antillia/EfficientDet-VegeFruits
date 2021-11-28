@@ -350,7 +350,7 @@ class TrainConfigParser(TrainConfig):
     try:
       return int(self.config[self.VALIDATION][self.BATCH_SIZE])
     except:
-      return 1
+      return 64
     
   """
   'Number of samples for eval.'

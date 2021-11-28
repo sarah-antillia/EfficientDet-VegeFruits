@@ -150,6 +150,9 @@ class CategorizedCOCOEvaluator(COCOeval):
                         except Exception as ex:
                             print(ex)
                             pass
+                    else:
+                        print("=== {} is out of range {}".format(i+1, p.catIds))
+                    
                     ap_line = ap_line + str(map) + SEP
                     ar_line = ar_line + str(mar) + SEP
                     f_line  = f_line  + str(f)   + SEP
